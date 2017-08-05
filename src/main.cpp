@@ -8,6 +8,10 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
+// *** Move contants to separate file for Behavior Planning/Trajectory Generation ***
+#include "constants.cpp"
+// *** May just feed behavior.cpp into Trajectory Generation file ***
+#include "behavior.cpp"
 
 using namespace std;
 
@@ -240,6 +244,65 @@ int main() {
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+            double pos_x;
+            double pos_y;
+            double angle;
+            int path_size = previous_path_x.size();
+          
+            // How much of previous path to use
+            for(int i = 0; i < path_size; i++)
+            {
+              next_x_vals.push_back(previous_path_x[i]);
+              next_y_vals.push_back(previous_path_y[i]);
+            }
+          
+            // If no previous path, initiate at current values
+            if(path_size == 0)
+            {
+              pos_x = car_x;
+              pos_y = car_y;
+              angle = deg2rad(car_yaw);
+            }
+            else  // Otherwise, use previous x and y and calculate angle based on change in x & y
+            {
+              pos_x = previous_path_x[path_size-1];
+              pos_y = previous_path_y[path_size-1];
+            
+              double pos_x2 = previous_path_x[path_size-2];
+              double pos_y2 = previous_path_y[path_size-2];
+              angle = atan2(pos_y-pos_y2,pos_x-pos_x2);
+            }
+          
+            // Finally, plan the rest of the path based on calculations
+          
+          
+            // *** dist_inc will change based on velocity - divide by 50 since 20ms per move (move inside loop)***
+            // *** Also, decide if we want different than 1 second (50) of moves planned out
+            double dist_inc = 0.5;
+            vector<double> frenet_vec;
+            vector<double> xy_vec;
+            double next_s;
+            double next_d;
+            for(int i = 0; i < 50-path_size; i++)
+            {
+              frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
+              // *** Change the below two to take in a feed from trajectory calculation ***
+              next_s = frenet_vec[0] + dist_inc;
+              next_d = 6; // Keep same for now to go straight
+              xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+              pos_x = xy_vec[0];
+              pos_y = xy_vec[1];
+              next_x_vals.push_back(pos_x);
+              next_y_vals.push_back(pos_y);
+              //next_x_vals.push_back(pos_x+(dist_inc)*cos(angle+(i+1)*(pi()/100)));
+              //next_y_vals.push_back(pos_y+(dist_inc)*sin(angle+(i+1)*(pi()/100)));
+              //pos_x += (dist_inc)*cos(angle+(i+1)*(pi()/100));
+              //pos_y += (dist_inc)*sin(angle+(i+1)*(pi()/100));
+              // *** Need to update angle too ***
+            }
+          
+            // ************ END TODO *************
+          
           	msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
 
