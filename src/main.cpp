@@ -284,7 +284,7 @@ int main() {
             double next_s;
             double next_d;
             BehaviorPlanner bp;
-            string move;
+            int move;
             int lane;
             for(int i = 0; i < 50-path_size; i++)
             {
@@ -293,13 +293,7 @@ int main() {
               next_s = frenet_vec[0] + dist_inc;
               move = bp.lanePlanner(car_s, car_d, sensor_fusion);
               lane = bp.curr_lane;
-              if (move == "Keep") {
-                next_d = (lane * 4) + 2;
-              } else if (move == "Prepare Right") {
-                next_d = (lane * 4) + 6;
-              } else {
-                next_d = (lane * 4) - 2;
-              }
+              next_d = (lane * 4) + 2 + move;
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
               pos_x = xy_vec[0];
               pos_y = xy_vec[1];

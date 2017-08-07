@@ -8,7 +8,7 @@
 
 #include "behavior.hpp"
 
-string BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sensor_fusion) {
+int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sensor_fusion) {
   int lane = laneCalc(d);
   curr_lane = lane;
   int new_lane;
@@ -22,11 +22,11 @@ string BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> s
   }
   
   if (new_lane == lane) {
-    return "Keep";
+    return 0;
   } else if (new_lane < lane) {
-    return "Prepare Left";
+    return -4;
   } else {
-    return "Prepare Right";
+    return 4;
   }
 }
 

@@ -18,7 +18,7 @@ class BehaviorPlanner {
   public:
     int curr_lane;
   
-    string lanePlanner(double s, double d, vector<vector<double>> sensor_fusion);
+    int lanePlanner(double s, double d, vector<vector<double>> sensor_fusion);
     int laneCalc(double d);
     vector<double> closestVehicle(double s, int lane, vector<vector<double>> sensor_fusion);
     int laneScore(double s, int lane, vector<vector<double>> sensor_fusion);
