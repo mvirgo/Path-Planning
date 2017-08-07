@@ -278,17 +278,28 @@ int main() {
           
             // *** dist_inc will change based on velocity - divide by 50 since 20ms per move (move inside loop)***
             // *** Also, decide if we want different than 1 second (50) of moves planned out
-            double dist_inc = 0.5;
+            double dist_inc = (SPEED_LIMIT - 1) / 50;   // was 0.5
             vector<double> frenet_vec;
             vector<double> xy_vec;
             double next_s;
             double next_d;
+            BehaviorPlanner bp;
+            string move;
+            int lane;
             for(int i = 0; i < 50-path_size; i++)
             {
               frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
               // *** Change the below two to take in a feed from trajectory calculation ***
               next_s = frenet_vec[0] + dist_inc;
-              next_d = 6; // Keep same for now to go straight
+              move = bp.lanePlanner(car_s, car_d, sensor_fusion);
+              lane = bp.curr_lane;
+              if (move == "Keep") {
+                next_d = (lane * 4) + 2;
+              } else if (move == "Prepare Right") {
+                next_d = (lane * 4) + 6;
+              } else {
+                next_d = (lane * 4) - 2;
+              }
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
               pos_x = xy_vec[0];
               pos_y = xy_vec[1];
