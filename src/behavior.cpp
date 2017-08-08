@@ -59,7 +59,7 @@ vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector
     vehicle_lane = laneCalc(vehicle_d);
     
     if (vehicle_lane == lane) { // if same lane
-      if (vehicle_s > s) { // and ahead of vehicle
+      if (vehicle_s > (s - 10)) { // and ahead of vehicle or within 10 meters
         if (vehicle_s - s < dist) {
           dist = vehicle_s - s;
           velocity = vehicle_v;

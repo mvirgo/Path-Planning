@@ -8,6 +8,7 @@
 
 #include "trajectory.hpp"
 #include "constants.cpp"
+#include "Eigen-3.3/Eigen/Dense"
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -34,19 +35,19 @@ vector<double> JMT(vector<double> start, vector <double> end, double T) {
   
 }
 
-vector<double> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion) {
-  vector<double> s_start = {s, speed, 0}  // *** Need to add actual acceleration ***
-  vector<double> d_start = {d, 0, 0}  // *** Need to calc actual change in d ***
-  int move = bp.lanePlanner(s, d, sensor_fusion);
-  int lane = bp.curr_lane;
+vector<vector<double>> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion) {
+  vector<double> s_start = {s, speed, 0};  // *** Need to add actual acceleration ***
+  vector<double> d_start = {d, 0, 0};  // *** Need to calc actual change in d ***
+  double move = double(bp.lanePlanner(s, d, sensor_fusion));
+  double lane = double(bp.curr_lane);
   
-  double T = 3;  // *** Tune this for duration to calculate trajectory ***
-  vector<double> s_goal = {s + T * (SPEED_LIMIT - 1), speed, 0};  // *** Want to set speed based on cars in front, or limit ***
-  vector<double> d_goal = {(lane * 4) + 2 + move), 0, 0};
+  double T = 5;  // *** Tune this for duration to calculate trajectory ***
+  vector<double> s_goal = {s + T * (SPEED_LIMIT - 10), speed, 0};  // *** Want to set speed based on cars in front, or limit ***
+  vector<double> d_goal = {((lane * 4) + 2 + move), 0, 0};
   
   vector<double> s_coeffs = JMT(s_start, s_goal, T);
   vector<double> d_coeffs = JMT(d_start, d_goal, T);
   
-  return {s_coeffs, d_coeffs}  // *** This is wrong, need to calculate trajectory and return different values ***
+  return {s_coeffs, d_coeffs};  // *** This is wrong, need to calculate trajectory and return different values ***
   
 }

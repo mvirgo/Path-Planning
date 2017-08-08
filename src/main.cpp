@@ -8,10 +8,9 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
-// *** Move contants to separate file for Behavior Planning/Trajectory Generation ***
-#include "constants.cpp"
 // *** May just feed behavior.cpp into Trajectory Generation file ***
 #include "behavior.cpp"
+#include "trajectory.cpp"
 
 using namespace std;
 
@@ -248,6 +247,9 @@ int main() {
             double pos_y;
             double angle;
             int path_size = previous_path_x.size();
+            if (path_size > 50) {
+              path_size = 50;
+            }
           
             // How much of previous path to use
             for(int i = 0; i < path_size; i++)
@@ -281,12 +283,16 @@ int main() {
             double dist_inc = (SPEED_LIMIT - 1) / 50;   // was 0.5
             vector<double> frenet_vec;
             vector<double> xy_vec;
-            double next_s;
-            double next_d;
+            double next_s = 0;
+            double next_d = 0;
             BehaviorPlanner bp;
             int move;
             int lane;
-            for(int i = 0; i < 50-path_size; i++)
+            //vector<vector<double>> coeffs;
+            //vector<double> s_coeffs;
+            //vector<double> d_coeffs;
+            //double t;
+            for(int i = 0; i < 150-path_size; i++)
             {
               frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
               // *** Change the below two to take in a feed from trajectory calculation ***
@@ -294,16 +300,22 @@ int main() {
               move = bp.lanePlanner(car_s, car_d, sensor_fusion);
               lane = bp.curr_lane;
               next_d = (lane * 4) + 2 + move;
+              //coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion);
+              //s_coeffs = coeffs[0];
+              //d_coeffs = coeffs[1];
+              //t = 0.02 * i;
+              //for (int j = 0; j < s_coeffs.size(); j++) {
+                //next_s += s_coeffs[j] * pow(t, (j+1));
+                //next_d += d_coeffs[j] * pow(t, (j+1));
+              //}
+              if (next_s > 6945.554) {  // Keep within track values
+                next_s -= 6945.554;
+              }
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
               pos_x = xy_vec[0];
               pos_y = xy_vec[1];
               next_x_vals.push_back(pos_x);
               next_y_vals.push_back(pos_y);
-              //next_x_vals.push_back(pos_x+(dist_inc)*cos(angle+(i+1)*(pi()/100)));
-              //next_y_vals.push_back(pos_y+(dist_inc)*sin(angle+(i+1)*(pi()/100)));
-              //pos_x += (dist_inc)*cos(angle+(i+1)*(pi()/100));
-              //pos_y += (dist_inc)*sin(angle+(i+1)*(pi()/100));
-              // *** Need to update angle too ***
             }
           
             // ************ END TODO *************

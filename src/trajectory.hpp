@@ -34,6 +34,6 @@ using namespace std;
  */
 vector<double> JMT(vector<double> start, vector <double> end, double T);
 
-vector<double> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion);
+vector<vector<double>> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion);
 
 #endif /* trajectory_hpp */

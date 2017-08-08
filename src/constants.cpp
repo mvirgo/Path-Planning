@@ -1,3 +1,8 @@
+const int N_SAMPLES = 10;
+const vector<double> SIGMA_S = {10.0, 4.0, 2.0}; // s, s_dot, s_double_dot
+const vector<double> SIGMA_D = {1.0, 1.0, 1.0};
+const double SIGMA_T = 2.0;
+
 const int MAX_JERK = 10; // m/s/s/s
 const int MAX_ACCEL= 10; // m/s/s
 
