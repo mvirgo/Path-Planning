@@ -238,8 +238,8 @@ int main() {
 
           	json msgJson;
 
-          	vector<double> next_x_vals;
-          	vector<double> next_y_vals;
+            vector<double> next_x_vals;
+            vector<double> next_y_vals;
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
@@ -247,9 +247,8 @@ int main() {
             double pos_y;
             double angle;
             int path_size = previous_path_x.size();
-            if (path_size > 50) {
-              path_size = 50;
-            }
+            //  ******* Currently setting to zero due to looping problems *******
+            path_size = 0;
           
             // How much of previous path to use
             for(int i = 0; i < path_size; i++)
@@ -269,7 +268,7 @@ int main() {
             {
               pos_x = previous_path_x[path_size-1];
               pos_y = previous_path_y[path_size-1];
-            
+
               double pos_x2 = previous_path_x[path_size-2];
               double pos_y2 = previous_path_y[path_size-2];
               angle = atan2(pos_y-pos_y2,pos_x-pos_x2);
@@ -283,41 +282,48 @@ int main() {
             double dist_inc = (SPEED_LIMIT - 1) / 50;   // was 0.5
             vector<double> frenet_vec;
             vector<double> xy_vec;
-            double next_s = 0;
-            double next_d = 0;
-            BehaviorPlanner bp;
+            double next_s;
+            double next_d;
             int move;
             int lane;
-            //vector<vector<double>> coeffs;
-            //vector<double> s_coeffs;
-            //vector<double> d_coeffs;
-            //double t;
-            for(int i = 0; i < 150-path_size; i++)
+            vector<vector<double>> coeffs;
+            vector<double> s_coeffs;
+            vector<double> d_coeffs;
+            double T;
+            double time_increment;
+          
+            frenet_vec = getFrenet(car_x, car_y, angle, map_waypoints_x, map_waypoints_y);
+            T = 3;
+            coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
+            s_coeffs = coeffs[0];
+            d_coeffs = coeffs[1];
+            for(int i = 0; i < (T * 50) - path_size; i++)
             {
-              frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
-              // *** Change the below two to take in a feed from trajectory calculation ***
-              next_s = frenet_vec[0] + dist_inc;
-              move = bp.lanePlanner(car_s, car_d, sensor_fusion);
-              lane = bp.curr_lane;
-              next_d = (lane * 4) + 2 + move;
-              //coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion);
-              //s_coeffs = coeffs[0];
-              //d_coeffs = coeffs[1];
-              //t = 0.02 * i;
-              //for (int j = 0; j < s_coeffs.size(); j++) {
-                //next_s += s_coeffs[j] * pow(t, (j+1));
-                //next_d += d_coeffs[j] * pow(t, (j+1));
-              //}
+              // Initiate or reset next_s and next_d
+              next_s = 0;
+              next_d = 0;
+              time_increment = 0.02 * i;
+              for (int j = 0; j < s_coeffs.size(); j++) {
+                next_s += s_coeffs[j] * pow(time_increment, j);
+                next_d += d_coeffs[j] * pow(time_increment, j);
+                //std::cout<<j<<" "<<s_coeffs[j]<<std::endl;
+              }
               if (next_s > 6945.554) {  // Keep within track values
                 next_s -= 6945.554;
               }
+              // *** REMOVE BELOW FOUR LINES TO USE ABOVE CALC ***
+              //next_s = frenet_vec[0] + (dist_inc * i);
+              //move = bp.lanePlanner(car_s, car_d, sensor_fusion);
+              //lane = bp.curr_lane;
+              //next_d = (lane * 4) + 2 + move;
+              //std::cout<<next_s<<std::endl;
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
               pos_x = xy_vec[0];
               pos_y = xy_vec[1];
               next_x_vals.push_back(pos_x);
               next_y_vals.push_back(pos_y);
+              
             }
-          
             // ************ END TODO *************
           
           	msgJson["next_x"] = next_x_vals;

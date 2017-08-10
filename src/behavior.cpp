@@ -14,8 +14,8 @@ int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sens
   int new_lane;
   bool blocked = false;
   double distance = closestVehicle(s, lane, sensor_fusion)[0];
-  // check if blocked
-  if (distance > 100) {
+  // check if blocked, i.e. car is within 50 meters
+  if (distance > 50) {
     new_lane = lane;
   } else {
     new_lane = laneScore(s, lane, sensor_fusion) - 1;
