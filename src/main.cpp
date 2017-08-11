@@ -275,12 +275,6 @@ int main() {
             }
           
             // Finally, plan the rest of the path based on calculations
-          
-          
-            // *** dist_inc will change based on velocity - divide by 50 since 20ms per move (move inside loop)***
-            // *** Also, decide if we want different than 1 second (50) of moves planned out
-            double dist_inc = (SPEED_LIMIT - 1) / 50;   // was 0.5
-            vector<double> frenet_vec;
             vector<double> xy_vec;
             double next_s;
             double next_d;
@@ -291,8 +285,7 @@ int main() {
             vector<double> d_coeffs;
             double T;
             double time_increment;
-          
-            frenet_vec = getFrenet(car_x, car_y, angle, map_waypoints_x, map_waypoints_y);
+
             T = 3;
             coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
             s_coeffs = coeffs[0];
@@ -306,17 +299,11 @@ int main() {
               for (int j = 0; j < s_coeffs.size(); j++) {
                 next_s += s_coeffs[j] * pow(time_increment, j);
                 next_d += d_coeffs[j] * pow(time_increment, j);
-                //std::cout<<j<<" "<<s_coeffs[j]<<std::endl;
               }
               if (next_s > 6945.554) {  // Keep within track values
                 next_s -= 6945.554;
               }
-              // *** REMOVE BELOW FOUR LINES TO USE ABOVE CALC ***
-              //next_s = frenet_vec[0] + (dist_inc * i);
-              //move = bp.lanePlanner(car_s, car_d, sensor_fusion);
-              //lane = bp.curr_lane;
-              //next_d = (lane * 4) + 2 + move;
-              //std::cout<<next_s<<std::endl;
+
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
               pos_x = xy_vec[0];
               pos_y = xy_vec[1];
