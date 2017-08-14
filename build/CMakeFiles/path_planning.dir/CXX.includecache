@@ -1141,6 +1141,18 @@ behavior.cpp
 /Users/apple/Desktop/Path-Planning/src/behavior.cpp
 trajectory.cpp
 /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
+spline.h
+/Users/apple/Desktop/Path-Planning/src/spline.h
+
+/Users/apple/Desktop/Path-Planning/src/spline.h
+cstdio
+-
+cassert
+-
+vector
+-
+algorithm
+-
 
 /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
 trajectory.hpp

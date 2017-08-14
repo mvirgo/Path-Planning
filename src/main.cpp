@@ -11,6 +11,7 @@
 // *** May just feed behavior.cpp into Trajectory Generation file ***
 #include "behavior.cpp"
 #include "trajectory.cpp"
+#include "spline.h"
 
 using namespace std;
 
@@ -63,6 +64,7 @@ int ClosestWaypoint(double x, double y, vector<double> maps_x, vector<double> ma
 	return closestWaypoint;
 
 }
+
 
 int NextWaypoint(double x, double y, double theta, vector<double> maps_x, vector<double> maps_y)
 {
@@ -317,10 +319,52 @@ int main() {
               next_y_vals.push_back(pos_y);
               
             }
+          
+            // create a spline
+            tk::spline s;
+          
+            // Create pair vector to sort
+            vector<vector<double>> xy_pair;
+            for (int i = 0; i < next_x_vals.size(); i++) {
+              xy_pair.push_back({next_x_vals[i],next_y_vals[i]});
+            }
+            sort(xy_pair.begin(), xy_pair.end());
+            vector<double> sort_x_vals;
+            vector<double> sort_y_vals;
+          
+            for (int i = 0; i < next_x_vals.size(); i++) {
+              sort_x_vals.push_back(xy_pair[i][0]);
+              sort_y_vals.push_back(xy_pair[i][1]);
+            }
+          
+            // set (x,y) points to the spline
+            s.set_points(sort_x_vals, sort_y_vals);
+          
+            double target_x = sort_x_vals[sort_x_vals.size()-1];
+            double x_point = sort_x_vals[0];
+            double y_point = sort_y_vals[0];
+            double target_y = s(target_x);
+            double target_dist = sqrt(pow(target_x - x_point,2) + pow(target_y - y_point,2));
+            double num_points = (T * 50) - path_size;
+            double N = target_dist / num_points;
+          
+            vector<double> spline_x_vals;
+            vector<double> spline_y_vals;
+          
+            for(int i = 0; i < num_points; i++) {
+              x_point += N;
+              y_point = s(x_point);
+              
+              spline_x_vals.push_back(x_point);
+              spline_y_vals.push_back(y_point);
+            }
+          
             // ************ END TODO *************
           
           	msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
+            //msgJson["next_x"] = spline_x_vals;
+            //msgJson["next_y"] = spline_y_vals;
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
