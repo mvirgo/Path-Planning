@@ -41,8 +41,9 @@ vector<vector<double>> trajectory(double s, double d, double speed, vector<vecto
   vector<double> d_start = {d, 0, 0};  // *** Need to calc actual change in d ***
   double move = double(bp.lanePlanner(s, d, sensor_fusion));
   double lane = double(bp.curr_lane);
+  double goal_speed = bp.target_vehicle_speed;
 
-  vector<double> s_goal = {s + (T * 20), 20, 0};  // *** Want to set speed based on cars in front, or limit ***
+  vector<double> s_goal = {s + (T * goal_speed), goal_speed, 0};
   vector<double> d_goal = {((lane * 4) + 2 + move), 0, 0};
   
   vector<double> s_coeffs = JMT(s_start, s_goal, T);

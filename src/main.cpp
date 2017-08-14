@@ -285,9 +285,15 @@ int main() {
             vector<double> d_coeffs;
             double T;
             double time_increment;
+            car_speed /= 2.23694;  // mph to meters per second
 
             T = 3;
             coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
+            //if (path_size > 0) {
+              //coeffs = trajectory(end_path_s, end_path_d, car_speed, sensor_fusion, T);
+            //} else {
+              //coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
+            //}
             s_coeffs = coeffs[0];
             d_coeffs = coeffs[1];
             for(int i = 0; i < (T * 50) - path_size; i++)

@@ -17,6 +17,7 @@ using namespace std;
 class BehaviorPlanner {
   public:
     int curr_lane;
+    double target_vehicle_speed;
   
     int lanePlanner(double s, double d, vector<vector<double>> sensor_fusion);
     int laneCalc(double d);
