@@ -6,7 +6,10 @@
 //
 //
 
+#include <random>
+#include <string>
 #include "trajectory.hpp"
+#include "behavior.cpp"
 #include "constants.cpp"
 #include "Eigen-3.3/Eigen/Dense"
 
@@ -46,9 +49,46 @@ vector<vector<double>> trajectory(double s, double d, double speed, vector<vecto
   vector<double> s_goal = {s + (T * goal_speed), goal_speed, 0};
   vector<double> d_goal = {((lane * 4) + 2 + move), 0, 0};
   
-  vector<double> s_coeffs = JMT(s_start, s_goal, T);
-  vector<double> d_coeffs = JMT(d_start, d_goal, T);
+  vector<vector<double>> all_s_coeffs;
+  vector<vector<double>> all_d_coeffs;
+  vector<vector<double>> new_goal;
+  vector<double> temp_s_goal;
+  vector<double> temp_d_goal;
+  vector<double> temp_T_goal;
+  
+  for (int i = 0; i < N_SAMPLES; i++) {
+    new_goal = perturbGoal(s_goal, SIGMA_S, d_goal, SIGMA_D, T, SIGMA_T);
+    temp_s_goal = new_goal[0];
+    temp_d_goal = new_goal[1];
+    temp_T_goal = new_goal[2];
+    
+    all_s_coeffs.push_back(JMT(s_start, temp_s_goal, temp_T_goal[0]));
+    all_d_coeffs.push_back(JMT(d_start, temp_d_goal, temp_T_goal[0]));
+  }
+  
+  vector<double> s_coeffs = all_s_coeffs[0];  // *** Change to take in lowest cost function ***
+  vector<double> d_coeffs = all_d_coeffs[0];  // *** Change to take in lowest cost function ***
   
   return {s_coeffs, d_coeffs};
   
+}
+
+vector<vector<double>> perturbGoal(vector<double> s_goal, vector<double> sig_s, vector<double> d_goal, vector<double> sig_d,
+                                   double t_goal, double sig_t) {
+  random_device rd;
+  default_random_engine gen(rd());
+  
+  vector<vector<double>> perturbed_goal = {{},{},{}};
+  normal_distribution<double> dist_t(t_goal, sig_t);
+  
+  for (int i = 0; i < 3; i++) {
+    normal_distribution<double> dist_s(s_goal[i], sig_s[i]);
+    normal_distribution<double> dist_d(d_goal[i], sig_d[i]);
+    
+    perturbed_goal[0].push_back(dist_s(gen));
+    perturbed_goal[1].push_back(dist_d(gen));
+    perturbed_goal[2].push_back(dist_t(gen));
+  }
+  
+  return perturbed_goal;
 }

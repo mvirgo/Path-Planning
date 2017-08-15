@@ -8,8 +8,6 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
-// *** May just feed behavior.cpp into Trajectory Generation file ***
-#include "behavior.cpp"
 #include "trajectory.cpp"
 #include "spline.h"
 
@@ -287,7 +285,7 @@ int main() {
             vector<double> d_coeffs;
             double T;
             double time_increment;
-            car_speed /= 2.23694;  // mph to meters per second
+            car_speed /= SPEED_CONV;  // mph to meters per second
 
             T = 3;
             coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
