@@ -88,10 +88,10 @@ int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor
   }
   
   if (lane == 0) {
-    return *max_element(begin(scores), end(scores) - 1);
+    return *max_element(scores.begin(), scores.end() - 1);
   } else if (lane == 1) {
-    return *max_element(begin(scores), end(scores));
+    return *max_element(scores.begin(), scores.end());
   } else {
-    return *max_element(begin(scores) + 1, end(scores));
+    return *max_element(scores.begin() + 1, scores.end());
   }
 }

@@ -40,36 +40,35 @@ vector<double> JMT(vector<double> start, vector <double> end, double T) {
 }
 
 vector<vector<double>> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion, double T) {
+  // Set current state, calculate mean goals desired
   vector<double> s_start = {s, speed, 0};  // *** Need to add actual acceleration ***
   vector<double> d_start = {d, 0, 0};  // *** Need to calc actual change in d ***
-  double move = double(bp.lanePlanner(s, d, sensor_fusion));
-  double lane = double(bp.curr_lane);
+  double move = bp.lanePlanner(s, d, sensor_fusion);
+  double lane = bp.curr_lane;
   double goal_speed = bp.target_vehicle_speed;
+  int best;
 
   vector<double> s_goal = {s + (T * goal_speed), goal_speed, 0};
   vector<double> d_goal = {((lane * 4) + 2 + move), 0, 0};
   
+  // Vectors to hold coefficients for goal perturbing
   vector<vector<double>> all_s_coeffs;
   vector<vector<double>> all_d_coeffs;
+  vector<vector<double>> all_T;
   vector<vector<double>> new_goal;
-  vector<double> temp_s_goal;
-  vector<double> temp_d_goal;
-  vector<double> temp_T_goal;
   
+  // Take samples from a normal distribution around the mean goal s, d and T
   for (int i = 0; i < N_SAMPLES; i++) {
-    new_goal = perturbGoal(s_goal, SIGMA_S, d_goal, SIGMA_D, T, SIGMA_T);
-    temp_s_goal = new_goal[0];
-    temp_d_goal = new_goal[1];
-    temp_T_goal = new_goal[2];
+    new_goal = perturbGoal(s_goal, SIGMA_S, d_goal, SIGMA_D, T, SIGMA_T);  // Outputs perturbed s_goal, d_goal, T_goal
     
-    all_s_coeffs.push_back(JMT(s_start, temp_s_goal, temp_T_goal[0]));
-    all_d_coeffs.push_back(JMT(d_start, temp_d_goal, temp_T_goal[0]));
+    all_s_coeffs.push_back(JMT(s_start, new_goal[0], new_goal[2][0]));
+    all_d_coeffs.push_back(JMT(d_start, new_goal[1], new_goal[2][0]));
+    all_T.push_back(new_goal[2]);
   }
   
-  vector<double> s_coeffs = all_s_coeffs[0];  // *** Change to take in lowest cost function ***
-  vector<double> d_coeffs = all_d_coeffs[0];  // *** Change to take in lowest cost function ***
+  best = bestTraj(all_s_coeffs, all_d_coeffs, all_T) - 1;
   
-  return {s_coeffs, d_coeffs};
+  return {all_s_coeffs[best], all_d_coeffs[best], all_T[best]};  // Best s_coeffs, d_coeffs, and T
   
 }
 
@@ -91,4 +90,23 @@ vector<vector<double>> perturbGoal(vector<double> s_goal, vector<double> sig_s, 
   }
   
   return perturbed_goal;
+}
+
+int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, vector<vector<double>> all_T) {
+  vector<double> costs;
+  
+  for (int i = 0; i < s_coeffs.size(); i++) {
+    costs.push_back(calcCost({s_coeffs[i], d_coeffs[i], all_T[i]}));
+  }
+  
+  return *min_element(costs.begin(), costs.end());
+}
+
+double calcCost(vector<vector<double>> trajectory) {
+  double cost = 0;
+  // *** Feed in trajectory data into cost_functions with weights and calculate total cost ***
+  //for (int i = 0; i < cost_functions.size(); i++) {
+    //cost + = 0;  // *** Iterate through cost functions ***
+  //}
+  return cost + 1;  // *** Function has some issue if cost is 0, so for now add 1 ***
 }

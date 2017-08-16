@@ -296,6 +296,7 @@ int main() {
             //}
             s_coeffs = coeffs[0];
             d_coeffs = coeffs[1];
+            T = coeffs[2][0];
             for(int i = 0; i < (T * 50) - path_size; i++)
             {
               // Initiate or reset next_s and next_d
@@ -336,26 +337,26 @@ int main() {
             }
           
             // set (x,y) points to the spline
-            s.set_points(sort_x_vals, sort_y_vals);
+            //s.set_points(sort_x_vals, sort_y_vals);
           
-            double target_x = sort_x_vals[sort_x_vals.size()-1];
-            double x_point = sort_x_vals[0];
-            double y_point = sort_y_vals[0];
-            double target_y = s(target_x);
-            double target_dist = sqrt(pow(target_x - x_point,2) + pow(target_y - y_point,2));
-            double num_points = (T * 50) - path_size;
-            double N = target_dist / num_points;
+            //double target_x = sort_x_vals[sort_x_vals.size()-1];
+            //double x_point = sort_x_vals[0];
+            //double y_point = sort_y_vals[0];
+            //double target_y = s(target_x);
+            //double target_dist = sqrt(pow(target_x - x_point,2) + pow(target_y - y_point,2));
+            //double num_points = (T * 50) - path_size;
+            //double N = target_dist / num_points;
           
-            vector<double> spline_x_vals;
-            vector<double> spline_y_vals;
+            //vector<double> spline_x_vals;
+            //vector<double> spline_y_vals;
           
-            for(int i = 0; i < num_points; i++) {
-              x_point += N;
-              y_point = s(x_point);
+            //for(int i = 0; i < num_points; i++) {
+              //x_point += N;
+              //y_point = s(x_point);
               
-              spline_x_vals.push_back(x_point);
-              spline_y_vals.push_back(y_point);
-            }
+              //spline_x_vals.push_back(x_point);
+              //spline_y_vals.push_back(y_point);
+            //}
           
             // ************ END TODO *************
           

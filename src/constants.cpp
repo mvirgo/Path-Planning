@@ -10,8 +10,7 @@ const int EXPECTED_JERK_IN_ONE_SEC = 2; // m/s/s
 const int EXPECTED_ACC_IN_ONE_SEC = 1; // m/s
 
 const double SPEED_LIMIT = 22.352; // 50 mph in m/s
-const double SPEED_CONV = 2.23694;
-// ** Need to check the below **
+const double SPEED_CONV = 2.23694; // convert speeds for easier calc
 const double VEHICLE_RADIUS = 1.5; // model vehicle as circle to simplify collision detection
 
 const int MIN_D = 0; // middle yellow lines

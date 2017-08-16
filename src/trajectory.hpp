@@ -36,7 +36,9 @@ vector<double> JMT(vector<double> start, vector <double> end, double T);
 
 vector<vector<double>> trajectory(double s, double d, double speed, vector<vector<double>> sensor_fusion, double T);
 
-vector<vector<double>> totalCost(vector<string> cost_functions, vector<double> weights, vector<vector<double>> trajectory);
+double calcCost(vector<vector<double>> trajectory);
+
+int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, vector<vector<double>> all_T);
 
 vector<vector<double>> perturbGoal(vector<double> s_goal, vector<double> sig_s, vector<double> d_goal, vector<double> sig_d,
                                    double t_goal, double sig_t);
