@@ -10,7 +10,7 @@
 #include <string>
 #include "trajectory.hpp"
 #include "behavior.cpp"
-#include "constants.cpp"
+#include "costfunctions.cpp"
 #include "Eigen-3.3/Eigen/Dense"
 
 using namespace std;
@@ -104,6 +104,10 @@ int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, v
 
 double calcCost(vector<vector<double>> trajectory) {
   double cost = 0;
+  vector <double> weights = {1, 1, 1};  // *** Tune for cost functions ***
+  
+  //cost += exceeds_speed_limit(trajectory) * weights[0];
+  //cost += stays_on_road_cost(trajectory) * weights[1];
   // *** Feed in trajectory data into cost_functions with weights and calculate total cost ***
   //for (int i = 0; i < cost_functions.size(); i++) {
     //cost + = 0;  // *** Iterate through cost functions ***
