@@ -23,7 +23,7 @@ vector <double> differentiate(vector <double> coeffs) {
 }
 
 double exceeds_speed_limit(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double max_speed = 0;
   double curr_speed;
@@ -45,7 +45,7 @@ double exceeds_speed_limit(vector<vector<double>> trajectory) {
 }
 
 double stays_on_road_cost(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double low_D = 0;
   double high_D = 12;
@@ -70,7 +70,7 @@ double stays_on_road_cost(vector<vector<double>> trajectory) {
 }
 
 double total_accel_cost(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double acc;
   double total_acc = 0;
@@ -90,7 +90,7 @@ double total_accel_cost(vector<vector<double>> trajectory) {
 }
 
 double max_accel_cost(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double high_acc = 0;
   double curr_acc;
@@ -114,7 +114,7 @@ double max_accel_cost(vector<vector<double>> trajectory) {
 }
 
 double max_jerk_cost(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double high_jerk = 0;
   double curr_jerk;
@@ -139,7 +139,7 @@ double max_jerk_cost(vector<vector<double>> trajectory) {
 }
 
 double total_jerk_cost(vector<vector<double>> trajectory) {
-  double T = trajectory[3][0];
+  double T = trajectory[2][0];
   double dt;
   double j;
   double total_jerk = 0;
