@@ -19,4 +19,12 @@ double exceeds_speed_limit(vector<vector<double>> traj);
 
 double stays_on_road_cost(vector<vector<double>> traj);
 
+double total_accel_cost(vector<vector<double>> trajectory);
+
+double max_accel_cost(vector<vector<double>> trajectory);
+
+double max_jerk_cost(vector<vector<double>> trajectory);
+
+double total_jerk_cost(vector<vector<double>> trajectory);
+
 #endif /* costfunctions_hpp */
