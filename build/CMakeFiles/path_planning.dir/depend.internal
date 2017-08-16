@@ -216,9 +216,10 @@ CMakeFiles/path_planning.dir/src/main.cpp.o
  /Users/apple/Desktop/Path-Planning/src/behavior.cpp
  /Users/apple/Desktop/Path-Planning/src/behavior.hpp
  /Users/apple/Desktop/Path-Planning/src/constants.cpp
+ /Users/apple/Desktop/Path-Planning/src/costfunctions.cpp
+ /Users/apple/Desktop/Path-Planning/src/costfunctions.hpp
  /Users/apple/Desktop/Path-Planning/src/json.hpp
  /Users/apple/Desktop/Path-Planning/src/main.cpp
- /Users/apple/Desktop/Path-Planning/src/spline.h
  /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
  /Users/apple/Desktop/Path-Planning/src/trajectory.hpp
  /usr/local/include/pthread-barrier.h
