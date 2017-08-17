@@ -17,6 +17,9 @@ using namespace std;
 class BehaviorPlanner {
   public:
     int curr_lane;
+    vector<double> s_goal;
+    vector<double> d_goal;
+    double T_goal;
     double target_vehicle_speed;
     double target_vehicle_s;
   

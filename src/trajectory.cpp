@@ -48,8 +48,9 @@ vector<vector<double>> trajectory(double s, double d, double speed, vector<vecto
   double goal_speed = bp.target_vehicle_speed;
   int best;
 
-  vector<double> s_goal = {s + (T * goal_speed), goal_speed, 0};
-  vector<double> d_goal = {((lane * 4) + 2 + move), 0, 0};
+  bp.s_goal = {s + (T * goal_speed), goal_speed, 0};
+  bp.d_goal = {((lane * 4) + 2 + move), 0, 0};
+  bp.T_goal = T;
   
   // Vectors to hold coefficients for goal perturbing
   vector<vector<double>> all_s_coeffs;
@@ -59,7 +60,7 @@ vector<vector<double>> trajectory(double s, double d, double speed, vector<vecto
   
   // Take samples from a normal distribution around the mean goal s, d and T
   for (int i = 0; i < N_SAMPLES; i++) {
-    new_goal = perturbGoal(s_goal, SIGMA_S, d_goal, SIGMA_D, T, SIGMA_T);  // Outputs perturbed s_goal, d_goal, T_goal
+    new_goal = perturbGoal(bp.s_goal, SIGMA_S, bp.d_goal, SIGMA_D, bp.T_goal, SIGMA_T);  // Outputs perturbed s_goal, d_goal, T_goal
     
     all_s_coeffs.push_back(JMT(s_start, new_goal[0], new_goal[2][0]));
     all_d_coeffs.push_back(JMT(d_start, new_goal[1], new_goal[2][0]));
@@ -104,7 +105,7 @@ int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, v
 
 double calcCost(vector<vector<double>> trajectory) {
   double cost = 0;
-  vector <double> weights = {1, 1, 1, 1, 1, 1, 1, 1};  // *** Tune for cost functions ***
+  vector <double> weights = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};  // *** Tune for cost functions ***
   
   cost += exceeds_speed_limit(trajectory) * weights[0];
   cost += stays_on_road_cost(trajectory) * weights[1];
@@ -114,9 +115,9 @@ double calcCost(vector<vector<double>> trajectory) {
   cost += total_jerk_cost(trajectory) * weights[5];
   cost += collision_cost(trajectory, bp.target_vehicle_s, bp.target_vehicle_speed) * weights[6];
   cost += buffer_cost(trajectory, bp.target_vehicle_s, bp.target_vehicle_speed) * weights[7];
-  // *** Feed in trajectory data into cost_functions with weights and calculate total cost ***
-  //for (int i = 0; i < cost_functions.size(); i++) {
-    //cost + = 0;  // *** Iterate through cost functions ***
-  //}
-  return cost + 1;  // Adding one fixes a segmentation fault here
+  cost += time_diff_cost(trajectory, bp.T_goal) * weights[8];
+  cost += s_diff_cost(trajectory, bp.s_goal) * weights[9];
+  cost += d_diff_cost(trajectory, bp.d_goal) * weights[10];
+
+  return cost;
 }

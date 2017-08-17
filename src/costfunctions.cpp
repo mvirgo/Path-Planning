@@ -204,3 +204,47 @@ double buffer_cost(vector<vector<double>> trajectory, double target_s, double ta
   
   return logistic((2*VEHICLE_RADIUS) / nearest);
 }
+
+double time_diff_cost(vector<vector<double>> trajectory, double T_goal) {
+  double T = trajectory[2][0];
+  
+  return logistic(abs(T-T_goal) / T);
+}
+
+double s_diff_cost(vector<vector<double>> trajectory, vector<double> s_goal) {
+  double T = trajectory[2][0];
+  double cost = 0;
+  
+  vector<double> s_vec = trajectory[0];
+  vector<double> s_dot_vec = differentiate(s_vec);
+  vector<double> s_d_dot_vec = differentiate(s_dot_vec);
+  
+  double s = to_equation(s_vec, T);
+  double s_dot = to_equation(s_dot_vec, T);
+  double s_d_dot = to_equation(s_d_dot_vec, T);
+  
+  cost += logistic(abs(s - s_goal[0]) / SIGMA_S[0]);
+  cost += logistic(abs(s_dot - s_goal[1]) / SIGMA_S[1]);
+  cost += logistic(abs(s_d_dot - s_goal[2]) / SIGMA_S[2]);
+  
+  return cost;
+}
+
+double d_diff_cost(vector<vector<double>> trajectory, vector<double> d_goal) {
+  double T = trajectory[2][0];
+  double cost = 0;
+  
+  vector<double> d_vec = trajectory[0];
+  vector<double> d_dot_vec = differentiate(d_vec);
+  vector<double> d_d_dot_vec = differentiate(d_dot_vec);
+  
+  double d = to_equation(d_vec, T);
+  double d_dot = to_equation(d_dot_vec, T);
+  double d_d_dot = to_equation(d_d_dot_vec, T);
+  
+  cost += logistic(abs(d - d_goal[0]) / SIGMA_D[0]);
+  cost += logistic(abs(d_dot - d_goal[1]) / SIGMA_D[1]);
+  cost += logistic(abs(d_d_dot - d_goal[2]) / SIGMA_D[2]);
+  
+  return cost;
+}

@@ -35,4 +35,10 @@ double collision_cost(vector<vector<double>> trajectory, double target_s, double
 
 double buffer_cost(vector<vector<double>> trajectory, double target_s, double target_speed);
 
+double time_diff_cost(vector<vector<double>> trajectory, double T_goal);
+
+double s_diff_cost(vector<vector<double>> trajectory, vector<double> s_goal);
+
+double d_diff_cost(vector<vector<double>> trajectory, vector<double> d_goal);
+
 #endif /* costfunctions_hpp */

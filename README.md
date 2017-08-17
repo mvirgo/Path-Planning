@@ -5,9 +5,11 @@ Udacity Self-Driving Car Engineer Nanodegree Program, Term 3, Project 1
 
 ### Completed Steps
 1. Implement Behavior Planning for determining when to change lanes
+2. Implement Trajectory Generation to smooth out lane changes and determine safe/possible trajectories.
+3. Implement various cost functions to improve trajectories.
 
 ### Upcoming Steps
-1. Implement Trajector Generation to smooth out lane changes and determine safe/possible trajectories.
+1. Use remaining old path to plot a new trajectory.
 2. Tune cost functions to improve safety/efficiency of driving.
 3. Project write-up and finalization
 

@@ -1,4 +1,4 @@
-const int N_SAMPLES = 10;
+const int N_SAMPLES = 100;
 const vector<double> SIGMA_S = {10.0, 4.0, 2.0}; // s, s_dot, s_double_dot
 const vector<double> SIGMA_D = {1.0, 1.0, 1.0};
 const double SIGMA_T = 1.0;
