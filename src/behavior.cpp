@@ -18,10 +18,12 @@ int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sens
   if (distance > 50) {
     new_lane = lane;
     target_vehicle_speed = 22.352;
+    target_vehicle_s = 10000;
     return 0;
   } else {
     new_lane = laneScore(s, lane, sensor_fusion) - 1;
     target_vehicle_speed = closestVehicle(s, new_lane, sensor_fusion)[1] / 2.23694;
+    target_vehicle_s = closestVehicle(s, new_lane, sensor_fusion)[2];
   }
   
   if (new_lane == lane) {
@@ -50,6 +52,7 @@ int BehaviorPlanner::laneCalc(double d) {
 vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector<double>> sensor_fusion) {
   double dist = 10000;
   double velocity;
+  double target_s;
   int vehicle_lane;
   double vehicle_s;
   double vehicle_d;
@@ -62,7 +65,7 @@ vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector
     vehicle_lane = laneCalc(vehicle_d);
     
     if (vehicle_lane == lane) { // if same lane
-      if (vehicle_s > (s - 10)) { // and ahead of vehicle or within 10 meters
+      if (vehicle_s > s) { // and ahead of my vehicle
         if (vehicle_s - s < dist) {
           dist = vehicle_s - s;
           velocity = vehicle_v;
@@ -70,7 +73,7 @@ vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector
       }
     }
   }
-  return {dist, velocity};
+  return {dist, velocity, target_s};
 }
 
 int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor_fusion) {

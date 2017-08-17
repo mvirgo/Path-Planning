@@ -22,6 +22,36 @@ vector <double> differentiate(vector <double> coeffs) {
   return derivative;
 }
 
+double to_equation(vector<double> state, double dt) {
+  double total = 0;
+  
+  for (int i = 0; i < state.size(); i++) {
+    total += state[i] * pow(dt, i);
+  }
+  
+  return total;
+}
+
+double nearest_approach(vector<vector<double>> trajectory, double target_s, double target_speed) {
+  double T = trajectory[2][0];
+  double dt;
+  double curr_s;
+  double nearest = 99999;
+  double vehicle_s = target_s;
+  vector <double> s = trajectory[0];
+  
+  for (double i = 0; i < 100; i++) {
+    dt = (T * i) / 100;
+    curr_s = to_equation(s, dt);
+    vehicle_s += target_speed * dt;  // Simplify as if straight line, constant speed
+    if (abs(curr_s - vehicle_s) < nearest) {
+      nearest = abs(curr_s - vehicle_s);
+    }
+  }
+  
+  return nearest;
+}
+
 double exceeds_speed_limit(vector<vector<double>> trajectory) {
   double T = trajectory[2][0];
   double dt;
@@ -32,7 +62,7 @@ double exceeds_speed_limit(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    curr_speed = s_dot[0] + (s_dot[1] * dt) + (s_dot[2] * pow(dt, 2)) + (s_dot[3] * pow(dt, 3)) + (s_dot[4] * pow(dt, 4));
+    curr_speed = to_equation(s_dot, dt);
     if (curr_speed > max_speed) {
       max_speed = curr_speed;
     }
@@ -54,7 +84,7 @@ double stays_on_road_cost(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    curr_D = d[0] + (d[1] * dt) + (d[2] * pow(dt, 2)) + (d[3] * pow(dt, 3)) + (d[4] * pow(dt, 4)) + (d[5] * pow(dt,5));
+    curr_D = to_equation(d, dt);
     if (curr_D < low_D) {
       low_D = curr_D;
     } else if (curr_D < high_D) {
@@ -80,7 +110,7 @@ double total_accel_cost(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    acc = s_d_dot[0] + (s_d_dot[1] * dt) + (s_d_dot[2] * pow(dt, 2)) + (s_d_dot[3] * pow(dt, 3));
+    acc = to_equation(s_d_dot, dt);
     total_acc += abs(acc*dt);
   }
   
@@ -100,7 +130,7 @@ double max_accel_cost(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    curr_acc = abs(s_d_dot[0] + (s_d_dot[1] * dt) + (s_d_dot[2] * pow(dt, 2)) + (s_d_dot[3] * pow(dt, 3)));
+    curr_acc = abs(to_equation(s_d_dot, dt));
     if (curr_acc > high_acc) {
       high_acc = curr_acc;
     }
@@ -125,7 +155,7 @@ double max_jerk_cost(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    curr_jerk = abs(jerk[0] + (jerk[1] * dt) + (jerk[2] * pow(dt, 2)));
+    curr_jerk = abs(to_equation(jerk, dt));
     if (curr_jerk > high_jerk) {
       high_jerk = curr_jerk;
     }
@@ -150,11 +180,27 @@ double total_jerk_cost(vector<vector<double>> trajectory) {
   
   for (double i = 0; i < 100; i++) {
     dt = (T * i) / 100;
-    j = jerk[0] + (jerk[1] * dt) + (jerk[2] * pow(dt, 2));
+    j = to_equation(jerk, dt);
     total_jerk += abs(j*dt);
   }
   
   double jerk_per_second = total_jerk / T;
   
   return logistic(jerk_per_second / EXPECTED_JERK_IN_ONE_SEC);
+}
+
+double collision_cost(vector<vector<double>> trajectory, double target_s, double target_speed) {
+  double nearest = nearest_approach(trajectory, target_s, target_speed);
+  
+  if (nearest < 2*VEHICLE_RADIUS) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+double buffer_cost(vector<vector<double>> trajectory, double target_s, double target_speed) {
+  double nearest = nearest_approach(trajectory, target_s, target_speed);
+  
+  return logistic((2*VEHICLE_RADIUS) / nearest);
 }
