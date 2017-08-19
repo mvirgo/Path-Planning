@@ -21,7 +21,7 @@ int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sens
     target_vehicle_s = 10000;
     return 0;
   } else {
-    new_lane = laneScore(s, lane, sensor_fusion) - 1;
+    new_lane = laneScore(s, lane, sensor_fusion);
     target_vehicle_speed = closestVehicle(s, new_lane, sensor_fusion)[1] / 2.23694;
     target_vehicle_s = closestVehicle(s, new_lane, sensor_fusion)[2];
   }
@@ -91,10 +91,10 @@ int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor
   }
   
   if (lane == 0) {
-    return *max_element(scores.begin(), scores.end() - 1);
+    return max_element(scores.begin(), scores.end() - 1) - scores.begin();
   } else if (lane == 1) {
-    return *max_element(scores.begin(), scores.end());
+    return max_element(scores.begin(), scores.end())  - scores.begin();
   } else {
-    return *max_element(scores.begin() + 1, scores.end());
+    return max_element(scores.begin() + 1, scores.end())  - scores.begin();
   }
 }

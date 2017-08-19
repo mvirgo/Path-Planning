@@ -67,7 +67,7 @@ vector<vector<double>> trajectory(double s, double d, double speed, vector<vecto
     all_T.push_back(new_goal[2]);
   }
   
-  best = bestTraj(all_s_coeffs, all_d_coeffs, all_T) - 1;
+  best = bestTraj(all_s_coeffs, all_d_coeffs, all_T);
   
   return {all_s_coeffs[best], all_d_coeffs[best], all_T[best]};  // Best s_coeffs, d_coeffs, and T
   
@@ -80,14 +80,14 @@ vector<vector<double>> perturbGoal(vector<double> s_goal, vector<double> sig_s, 
   
   vector<vector<double>> perturbed_goal = {{},{},{}};
   normal_distribution<double> dist_t(t_goal, sig_t);
+  perturbed_goal[2].push_back(dist_t(gen));
   
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < s_goal.size(); i++) {
     normal_distribution<double> dist_s(s_goal[i], sig_s[i]);
     normal_distribution<double> dist_d(d_goal[i], sig_d[i]);
     
     perturbed_goal[0].push_back(dist_s(gen));
     perturbed_goal[1].push_back(dist_d(gen));
-    perturbed_goal[2].push_back(dist_t(gen));
   }
   
   return perturbed_goal;
@@ -100,7 +100,7 @@ int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, v
     costs.push_back(calcCost({s_coeffs[i], d_coeffs[i], all_T[i]}));
   }
   
-  return *min_element(costs.begin(), costs.end());
+  return min_element(costs.begin(), costs.end()) - costs.begin();
 }
 
 double calcCost(vector<vector<double>> trajectory) {
