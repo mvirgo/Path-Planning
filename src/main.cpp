@@ -246,8 +246,6 @@ int main() {
             double pos_y;
             double angle;
             int path_size = previous_path_x.size();
-            //  ******* Currently setting to zero due to looping problems *******
-            path_size = 0;
           
             // How much of previous path to use
             for(int i = 0; i < path_size; i++)
@@ -275,10 +273,9 @@ int main() {
           
             // Finally, plan the rest of the path based on calculations
             vector<double> xy_vec;
+            vector<double> frenet_vec;
             double next_s;
             double next_d;
-            int move;
-            int lane;
             vector<vector<double>> coeffs;
             vector<double> s_coeffs;
             vector<double> d_coeffs;
@@ -287,15 +284,12 @@ int main() {
             car_speed /= SPEED_CONV;  // mph to meters per second
 
             T = 3;
-            coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
-            //if (path_size > 0) {
-              //coeffs = trajectory(end_path_s, end_path_d, car_speed, sensor_fusion, T);
-            //} else {
-              //coeffs = trajectory(car_s, car_d, car_speed, sensor_fusion, T);
-            //}
+            frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
+            coeffs = trajectory(frenet_vec[0], frenet_vec[1], car_speed, sensor_fusion, T);
             s_coeffs = coeffs[0];
             d_coeffs = coeffs[1];
             T = coeffs[2][0];
+          
             for(int i = 0; i < (T * 50) - path_size; i++)
             {
               // Initiate or reset next_s and next_d
