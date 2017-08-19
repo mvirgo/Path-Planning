@@ -41,4 +41,6 @@ double s_diff_cost(vector<vector<double>> trajectory, vector<double> s_goal);
 
 double d_diff_cost(vector<vector<double>> trajectory, vector<double> d_goal);
 
+double speed_cost(vector<vector<double>> trajectory, double target_speed);
+
 #endif /* costfunctions_hpp */

@@ -248,3 +248,14 @@ double d_diff_cost(vector<vector<double>> trajectory, vector<double> d_goal) {
   
   return cost;
 }
+
+double speed_cost(vector<vector<double>> trajectory, double target_speed) {
+  double T = trajectory[2][0];
+  
+  vector <double> s = trajectory[0];
+  
+  double avg_v = (to_equation(s, T) - to_equation(s, 0)) / T;
+  double target_avg_speed = target_speed / T;
+  
+  return logistic(2*(target_avg_speed - avg_v) / avg_v);
+}
