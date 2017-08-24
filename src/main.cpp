@@ -8,6 +8,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
+#include "spline.h"
 #include "trajectory.cpp"
 
 using namespace std;
@@ -242,9 +243,6 @@ int main() {
 
 
           	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-            double pos_x;
-            double pos_y;
-            double angle;
             int path_size = previous_path_x.size();
           
             // How much of previous path to use
@@ -254,22 +252,42 @@ int main() {
               next_y_vals.push_back(previous_path_y[i]);
             }
           
+            vector<double> ptsx;
+            vector<double> ptsy;
+          
+            double ref_x = car_x;
+            double ref_y = car_y;
+            double ref_yaw = deg2rad(car_yaw);
+            double ref_vel = 49.5; //car_speed;
+            ref_vel /= SPEED_CONV; // mph to meters per second
+            double prev_car_x;
+            double prev_car_y;
+          
             // If no previous path, initiate at current values
-            if(path_size == 0)
+            if(path_size < 2)
             {
-              pos_x = car_x;
-              pos_y = car_y;
-              angle = deg2rad(car_yaw);
+              prev_car_x = car_x - cos(car_yaw);
+              prev_car_y = car_y - sin(car_yaw);
             }
             else  // Otherwise, use previous x and y and calculate angle based on change in x & y
             {
-              pos_x = previous_path_x[path_size-1];
-              pos_y = previous_path_y[path_size-1];
+              ref_x = previous_path_x[path_size-1];
+              ref_y = previous_path_y[path_size-1];
 
-              double pos_x2 = previous_path_x[path_size-2];
-              double pos_y2 = previous_path_y[path_size-2];
-              angle = atan2(pos_y-pos_y2,pos_x-pos_x2);
+              prev_car_x = previous_path_x[path_size-2];
+              prev_car_y = previous_path_y[path_size-2];
+              ref_yaw = atan2(ref_y-prev_car_y,ref_x-prev_car_x);
+              double vx = (ref_x-prev_car_x) / 0.02;
+              double vy = (ref_x-prev_car_y) / 0.02;
+              //ref_vel = sqrt(pow(vx,2)+pow(vy,2));
             }
+          
+            // Append starter points for spline later
+            ptsx.push_back(prev_car_x);
+            ptsx.push_back(ref_x);
+          
+            ptsy.push_back(prev_car_y);
+            ptsy.push_back(ref_y);
           
             // Finally, plan the rest of the path based on calculations
             vector<double> xy_vec;
@@ -281,16 +299,18 @@ int main() {
             vector<double> d_coeffs;
             double T;
             double time_increment;
-            car_speed /= SPEED_CONV;  // mph to meters per second
 
             T = 3;
-            frenet_vec = getFrenet(pos_x, pos_y, angle, map_waypoints_x, map_waypoints_y);
-            coeffs = trajectory(frenet_vec[0], frenet_vec[1], car_speed, sensor_fusion, T);
+            frenet_vec = getFrenet(ref_x, ref_y, ref_yaw, map_waypoints_x, map_waypoints_y);
+            coeffs = trajectory(frenet_vec[0], frenet_vec[1], ref_vel, sensor_fusion, T);
             s_coeffs = coeffs[0];
             d_coeffs = coeffs[1];
             T = coeffs[2][0];
           
-            for(int i = 0; i < (T * 50) - path_size; i++)
+            vector<double> spline_x_vals;
+            vector<double> spline_y_vals;
+          
+            for(int i = 1; i < (T * 50) - path_size; i++)
             {
               // Initiate or reset next_s and next_d
               next_s = 0;
@@ -305,16 +325,73 @@ int main() {
               }
 
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-              pos_x = xy_vec[0];
-              pos_y = xy_vec[1];
-              next_x_vals.push_back(pos_x);
-              next_y_vals.push_back(pos_y);
+              ptsx.push_back(xy_vec[0]);
+              ptsy.push_back(xy_vec[1]);
               
             }
           
+            if (ptsx.size() > 2) {  // Spline fails if not at least two points - Otherwise just use rest of old path
+              for (int i = 0; i < ptsx.size(); i++) {
+                double shift_x = ptsx[i] - ref_x;
+                double shift_y = ptsy[i] - ref_y;
+                
+                ptsx[i] = (shift_x*cos(0-ref_yaw)-shift_y*sin(0-ref_yaw));
+                ptsy[i] = (shift_x*sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
+              }
+              
+              vector<pair<double,double>> xy_pair;
+              for (int i = 0; i < ptsx.size(); i++) {
+                xy_pair.push_back(make_pair(ptsx[i], ptsy[i]));
+              }
+              sort(xy_pair.begin(), xy_pair.end());
+              
+              ptsx = {};
+              ptsy = {};
+              
+              for (int i = 0; i < xy_pair.size(); i++) {
+                ptsx.push_back(xy_pair[i].first);
+                ptsy.push_back(xy_pair[i].second);
+              }
+              
+              // create a spline
+              tk::spline s;
+              
+              // set (x,y) points to the spline
+              s.set_points(ptsx, ptsy);
+              
+              double target_x = 30;  // *** Maybe change this?? ***
+              double target_y = s(target_x);
+              double target_dist = sqrt(pow(target_x,2)+pow(target_y,2));
+              
+              double x_add_on = 0;
+              
+              for(int i = 0; i < (T * 50) - previous_path_x.size(); i++) {
+                double N = (target_dist/(.02*ref_vel));
+                double x_point = x_add_on+(target_x)/N;
+                double y_point = s(x_point);
+                
+                x_add_on = x_point;
+                
+                double x_ref = x_point;
+                double y_ref = y_point;
+                
+                // Rotate back to normal
+                x_point = (x_ref*cos(ref_yaw)-y_ref*sin(ref_yaw));
+                y_point = (x_ref*sin(ref_yaw)+y_ref*cos(ref_yaw));
+                
+                x_point += ref_x;
+                y_point += ref_y;
+                
+                next_x_vals.push_back(x_point);
+                next_y_vals.push_back(y_point);
+              }
+            }
+          
+          
+          
             // ************ END TODO *************
           
-          	msgJson["next_x"] = next_x_vals;
+            msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
 
           	auto msg = "42[\"control\","+ msgJson.dump()+"]";

@@ -105,7 +105,7 @@ int bestTraj(vector<vector<double>> s_coeffs, vector<vector<double>> d_coeffs, v
 
 double calcCost(vector<vector<double>> trajectory) {
   double cost = 0;
-  vector <double> weights = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};  // *** Tune for cost functions ***
+  vector <double> weights = {999, 999, 2, 999, 999, 2, 999, 50, 5, 10, 20, 100};  // *** Can tune for cost functions ***
   
   cost += exceeds_speed_limit(trajectory) * weights[0];
   cost += stays_on_road_cost(trajectory) * weights[1];

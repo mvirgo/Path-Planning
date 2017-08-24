@@ -1149,8 +1149,20 @@ Eigen-3.3/Eigen/QR
 /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/QR
 json.hpp
 /Users/apple/Desktop/Path-Planning/src/json.hpp
+spline.h
+/Users/apple/Desktop/Path-Planning/src/spline.h
 trajectory.cpp
 /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
+
+/Users/apple/Desktop/Path-Planning/src/spline.h
+cstdio
+-
+cassert
+-
+vector
+-
+algorithm
+-
 
 /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
 random

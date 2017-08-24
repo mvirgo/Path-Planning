@@ -219,6 +219,7 @@ CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/costfunctions.cpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/costfunctions.hpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/json.hpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/main.cpp
+CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/spline.h
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/trajectory.cpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: ../src/trajectory.hpp
 CMakeFiles/path_planning.dir/src/main.cpp.o: /usr/local/include/pthread-barrier.h
