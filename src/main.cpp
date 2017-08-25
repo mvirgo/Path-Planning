@@ -298,38 +298,36 @@ int main() {
             double T;
             double time_increment;
 
-            T = 3;
+            T = 1.5;
             frenet_vec = getFrenet(ref_x, ref_y, ref_yaw, map_waypoints_x, map_waypoints_y);
             coeffs = trajectory(frenet_vec[0], frenet_vec[1], ref_vel, sensor_fusion, T);
             s_coeffs = coeffs[0];
             d_coeffs = coeffs[1];
             T = coeffs[2][0];
           
-            vector<double> spline_x_vals;
-            vector<double> spline_y_vals;
-          
             for(int i = 1; i < (T * 50) - path_size; i++)
             {
-              // Initiate or reset next_s and next_d
-              next_s = 0;
-              next_d = 0;
-              time_increment = 0.02 * i;
-              next_s = to_equation(s_coeffs, time_increment);
-              next_d = to_equation(d_coeffs, time_increment);
-              if (next_s > 6945.554) {  // Keep within track values
-                next_s -= 6945.554;
-              }
-
-              xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-              if (i % 5 == 0) {  // Attempt at smoothing spline
+              int max = (T * 50) - path_size;
+              if (i == 0 or i == int(max/2) or i == max) {
+                // Initiate or reset next_s and next_d
+                next_s = 0;
+                next_d = 0;
+                time_increment = 0.02 * i;
+                next_s = to_equation(s_coeffs, time_increment);
+                next_d = to_equation(d_coeffs, time_increment);
+                
+                if (next_s > 6945.554) {  // Keep within track values
+                  next_s -= 6945.554;
+                }
+                
+                xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                
                 ptsx.push_back(xy_vec[0]);
                 ptsy.push_back(xy_vec[1]);
               }
-              
-              
             }
           
-            if (ptsx.size() > 2) {  // Spline fails if not at least two points - Otherwise just use rest of old path
+            if (ptsx.size() > 2) {  // Spline fails if not greater than two points - Otherwise just use rest of old path
               for (int i = 0; i < ptsx.size(); i++) {
                 double shift_x = ptsx[i] - ref_x;
                 double shift_y = ptsy[i] - ref_y;

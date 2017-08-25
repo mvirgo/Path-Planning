@@ -86,8 +86,12 @@ int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor
       scores[i] += 0.5;
     }
     vehicle = closestVehicle(s, i, sensor_fusion);
-    scores[i] += vehicle[0] / 100; // benefit for large open distance in lane
-    scores[i] += vehicle[1] / 200; // benefit for faster car speed in lane
+    if (vehicle[0] > 1000) {
+      scores[i] += 5;
+    } else {
+      scores[i] += 1 - (10/vehicle[0]); // benefit for large open distance in lane
+      scores[i] += 1 - (10/(vehicle[1])); // benefit for faster car speed in lane
+    }
   }
   
   if (lane == 0) {
