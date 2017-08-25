@@ -15,14 +15,14 @@ int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sens
   bool blocked = false;
   double distance = closestVehicle(s, lane, sensor_fusion)[0];
   // check if blocked, i.e. car is within 50 meters
-  if (distance > 50) {
+  if (distance > 30) {
     new_lane = lane;
-    target_vehicle_speed = 22.352;
+    target_vehicle_speed = 22.352 - 1;
     target_vehicle_s = 10000;
     return 0;
   } else {
     new_lane = laneScore(s, lane, sensor_fusion);
-    target_vehicle_speed = closestVehicle(s, new_lane, sensor_fusion)[1] / 2.23694;
+    target_vehicle_speed = closestVehicle(s, new_lane, sensor_fusion)[1];
     target_vehicle_s = closestVehicle(s, new_lane, sensor_fusion)[2];
   }
   
@@ -83,7 +83,7 @@ int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor
   
   for (int i = 0; i < 3; i++) {
     if (i == lane) {  // benefit to keeping lane
-      scores[i] += 1;
+      scores[i] += 0.5;
     }
     vehicle = closestVehicle(s, i, sensor_fusion);
     scores[i] += vehicle[0] / 100; // benefit for large open distance in lane

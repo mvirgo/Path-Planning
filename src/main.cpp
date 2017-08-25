@@ -258,8 +258,7 @@ int main() {
             double ref_x = car_x;
             double ref_y = car_y;
             double ref_yaw = deg2rad(car_yaw);
-            double ref_vel = 49.5; //car_speed;
-            ref_vel /= SPEED_CONV; // mph to meters per second
+            double ref_vel;
             double prev_car_x;
             double prev_car_y;
           
@@ -268,6 +267,7 @@ int main() {
             {
               prev_car_x = car_x - cos(car_yaw);
               prev_car_y = car_y - sin(car_yaw);
+              ref_vel = car_speed;
             }
             else  // Otherwise, use previous x and y and calculate angle based on change in x & y
             {
@@ -277,9 +277,7 @@ int main() {
               prev_car_x = previous_path_x[path_size-2];
               prev_car_y = previous_path_y[path_size-2];
               ref_yaw = atan2(ref_y-prev_car_y,ref_x-prev_car_x);
-              double vx = (ref_x-prev_car_x) / 0.02;
-              double vy = (ref_x-prev_car_y) / 0.02;
-              //ref_vel = sqrt(pow(vx,2)+pow(vy,2));
+              ref_vel = bp.target_vehicle_speed;
             }
           
             // Append starter points for spline later
@@ -316,17 +314,18 @@ int main() {
               next_s = 0;
               next_d = 0;
               time_increment = 0.02 * i;
-              for (int j = 0; j < s_coeffs.size(); j++) {
-                next_s += s_coeffs[j] * pow(time_increment, j);
-                next_d += d_coeffs[j] * pow(time_increment, j);
-              }
+              next_s = to_equation(s_coeffs, time_increment);
+              next_d = to_equation(d_coeffs, time_increment);
               if (next_s > 6945.554) {  // Keep within track values
                 next_s -= 6945.554;
               }
 
               xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-              ptsx.push_back(xy_vec[0]);
-              ptsy.push_back(xy_vec[1]);
+              if (i % 5 == 0) {  // Attempt at smoothing spline
+                ptsx.push_back(xy_vec[0]);
+                ptsy.push_back(xy_vec[1]);
+              }
+              
               
             }
           
@@ -359,13 +358,18 @@ int main() {
               // set (x,y) points to the spline
               s.set_points(ptsx, ptsy);
               
-              double target_x = 30;  // *** Maybe change this?? ***
+              double target_x = ptsx[ptsx.size() - 1];
               double target_y = s(target_x);
               double target_dist = sqrt(pow(target_x,2)+pow(target_y,2));
               
               double x_add_on = 0;
               
-              for(int i = 0; i < (T * 50) - previous_path_x.size(); i++) {
+              for(int i = 0; i < (T * 50) - path_size; i++) {
+                if (ref_vel < bp.target_vehicle_speed) {
+                  ref_vel += (MAX_ACCEL) * 0.02 * 0.8;
+                } else if (ref_vel > bp.target_vehicle_speed) {
+                  ref_vel -= (MAX_ACCEL) * 0.02 * 0.8;
+                }
                 double N = (target_dist/(.02*ref_vel));
                 double x_point = x_add_on+(target_x)/N;
                 double y_point = s(x_point);
@@ -387,7 +391,7 @@ int main() {
               }
             }
           
-          
+            bp.target_vehicle_speed = ref_vel;
           
             // ************ END TODO *************
           
