@@ -9,9 +9,11 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "spline.h"
-#include "trajectory.cpp"
+#include "behavior.cpp"
 
 using namespace std;
+
+BehaviorPlanner bp;
 
 // for convenience
 using json = nlohmann::json;
@@ -242,10 +244,10 @@ int main() {
             vector<double> next_y_vals;
 
 
-          	// TODO: define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+          	// ** PROJECT CODE: Define a path made up of (x,y) points that the car will visit sequentially every .02 seconds **
             int path_size = previous_path_x.size();
           
-            // How much of previous path to use
+            // Start with remaining old path
             for(int i = 0; i < path_size; i++)
             {
               next_x_vals.push_back(previous_path_x[i]);
@@ -259,14 +261,19 @@ int main() {
             double ref_y = car_y;
             double ref_yaw = deg2rad(car_yaw);
             double ref_vel;
-            double prev_car_x;
-            double prev_car_y;
           
             // If no previous path, initiate at current values
             if(path_size < 2)
             {
-              prev_car_x = car_x - cos(car_yaw);
-              prev_car_y = car_y - sin(car_yaw);
+              double prev_car_x = car_x - cos(car_yaw);
+              double prev_car_y = car_y - sin(car_yaw);
+              
+              ptsx.push_back(prev_car_x);
+              ptsx.push_back(car_x);
+              
+              ptsy.push_back(prev_car_y);
+              ptsy.push_back(car_y);
+              
               ref_vel = car_speed;
             }
             else  // Otherwise, use previous x and y and calculate angle based on change in x & y
@@ -274,60 +281,54 @@ int main() {
               ref_x = previous_path_x[path_size-1];
               ref_y = previous_path_y[path_size-1];
 
-              prev_car_x = previous_path_x[path_size-2];
-              prev_car_y = previous_path_y[path_size-2];
-              ref_yaw = atan2(ref_y-prev_car_y,ref_x-prev_car_x);
+              double ref_x_prev = previous_path_x[path_size-2];
+              double ref_y_prev = previous_path_y[path_size-2];
+              ref_yaw = atan2(ref_y-ref_y_prev,ref_x-ref_x_prev);
               ref_vel = bp.target_vehicle_speed;
+              
+              // Append starter points for spline later
+              ptsx.push_back(ref_x_prev);
+              ptsx.push_back(ref_x);
+              
+              ptsy.push_back(ref_y_prev);
+              ptsy.push_back(ref_y);
             }
           
-            // Append starter points for spline later
-            ptsx.push_back(prev_car_x);
-            ptsx.push_back(ref_x);
-          
-            ptsy.push_back(prev_car_y);
-            ptsy.push_back(ref_y);
-          
-            // Finally, plan the rest of the path based on calculations
-            vector<double> xy_vec;
-            vector<double> frenet_vec;
-            double next_s;
-            double next_d;
-            vector<vector<double>> coeffs;
-            vector<double> s_coeffs;
-            vector<double> d_coeffs;
-            double T;
-            double time_increment;
+            // Plan the rest of the path based on calculations
+            vector<double> frenet_vec = getFrenet(ref_x, ref_y, ref_yaw, map_waypoints_x, map_waypoints_y);
 
-            T = 1.5;
-            frenet_vec = getFrenet(ref_x, ref_y, ref_yaw, map_waypoints_x, map_waypoints_y);
-            coeffs = trajectory(frenet_vec[0], frenet_vec[1], ref_vel, sensor_fusion, T);
-            s_coeffs = coeffs[0];
-            d_coeffs = coeffs[1];
-            T = coeffs[2][0];
+            double move = bp.lanePlanner(frenet_vec[0], frenet_vec[1], sensor_fusion);
+            double lane = bp.curr_lane;
+            double next_d = (lane * 4) + 2 + move;
           
-            for(int i = 1; i < (T * 50) - path_size; i++)
-            {
-              int max = (T * 50) - path_size;
-              if (i == 0 or i == int(max/2) or i == max) {
-                // Initiate or reset next_s and next_d
-                next_s = 0;
-                next_d = 0;
-                time_increment = 0.02 * i;
-                next_s = to_equation(s_coeffs, time_increment);
-                next_d = to_equation(d_coeffs, time_increment);
-                
-                if (next_s > 6945.554) {  // Keep within track values
-                  next_s -= 6945.554;
-                }
-                
-                xy_vec = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                
-                ptsx.push_back(xy_vec[0]);
-                ptsy.push_back(xy_vec[1]);
+            // Double-check that the car has not incorrectly chose a blocked lane
+            int check_lane = bp.laneCalc(next_d);
+            vector<double> front_vehicle = bp.closestVehicle(frenet_vec[0], check_lane, sensor_fusion, true);
+            vector<double> back_vehicle = bp.closestVehicle(frenet_vec[0], check_lane, sensor_fusion, false);
+          
+            // Reset to current lane and leading vehicle if not enough room
+            if (front_vehicle[0] < 10 or back_vehicle[0] < 10) {
+              next_d = (lane * 4) + 2;
+              if (bp.laneCalc(next_d) != lane) {
+                bp.target_vehicle_speed = ref_vel;
               }
             }
           
+            // Set further waypoints based on going further along highway in desired lane
+            vector <double> wp1 = getXY(car_s+50, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+            vector <double> wp2 = getXY(car_s+100, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+            vector <double> wp3 = getXY(car_s+150, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          
+            ptsx.push_back(wp1[0]);
+            ptsx.push_back(wp2[0]);
+            ptsx.push_back(wp3[0]);
+          
+            ptsy.push_back(wp1[1]);
+            ptsy.push_back(wp2[1]);
+            ptsy.push_back(wp3[1]);
+          
             if (ptsx.size() > 2) {  // Spline fails if not greater than two points - Otherwise just use rest of old path
+              // Shift and rotate points to local coordinates
               for (int i = 0; i < ptsx.size(); i++) {
                 double shift_x = ptsx[i] - ref_x;
                 double shift_y = ptsy[i] - ref_y;
@@ -336,38 +337,28 @@ int main() {
                 ptsy[i] = (shift_x*sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
               }
               
-              vector<pair<double,double>> xy_pair;
-              for (int i = 0; i < ptsx.size(); i++) {
-                xy_pair.push_back(make_pair(ptsx[i], ptsy[i]));
-              }
-              sort(xy_pair.begin(), xy_pair.end());
-              
-              ptsx = {};
-              ptsy = {};
-              
-              for (int i = 0; i < xy_pair.size(); i++) {
-                ptsx.push_back(xy_pair[i].first);
-                ptsy.push_back(xy_pair[i].second);
-              }
-              
               // create a spline
               tk::spline s;
               
               // set (x,y) points to the spline
               s.set_points(ptsx, ptsy);
               
-              double target_x = ptsx[ptsx.size() - 1];
+              double target_x = 30;
               double target_y = s(target_x);
               double target_dist = sqrt(pow(target_x,2)+pow(target_y,2));
               
               double x_add_on = 0;
+              const int MAX_ACCEL= 10; // m/s/s
+              const double accel = (MAX_ACCEL) * 0.02 * 0.8; // Limit acceleration within acceptable range
               
-              for(int i = 0; i < (T * 50) - path_size; i++) {
-                if (ref_vel < bp.target_vehicle_speed) {
-                  ref_vel += (MAX_ACCEL) * 0.02 * 0.8;
-                } else if (ref_vel > bp.target_vehicle_speed) {
-                  ref_vel -= (MAX_ACCEL) * 0.02 * 0.8;
+              for(int i = 0; i < 50 - path_size; i++) {
+                if (ref_vel < bp.target_vehicle_speed - accel) {  // Accelerate if under target speed
+                  ref_vel += accel;
+                } else if (ref_vel > bp.target_vehicle_speed + accel) { // Brake if below target
+                  ref_vel -= accel;
                 }
+                
+                // Calculate points along new path
                 double N = (target_dist/(.02*ref_vel));
                 double x_point = x_add_on+(target_x)/N;
                 double y_point = s(x_point);
@@ -377,7 +368,7 @@ int main() {
                 double x_ref = x_point;
                 double y_ref = y_point;
                 
-                // Rotate back to normal
+                // Rotate and shift back to normal
                 x_point = (x_ref*cos(ref_yaw)-y_ref*sin(ref_yaw));
                 y_point = (x_ref*sin(ref_yaw)+y_ref*cos(ref_yaw));
                 
@@ -389,9 +380,9 @@ int main() {
               }
             }
           
-            bp.target_vehicle_speed = ref_vel;
+            bp.target_vehicle_speed = ref_vel;  // Save the end speed to be used for the next path
           
-            // ************ END TODO *************
+            // ************ END PROJECT CODE *************
           
             msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;

@@ -4,14 +4,9 @@
 CMakeFiles/path_planning.dir/src/main.cpp.o
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Cholesky
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Core
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Dense
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Eigenvalues
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Geometry
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Householder
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/Jacobi
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/LU
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/QR
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/SVD
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Cholesky/LDLT.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Cholesky/LLT.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Cholesky/LLT_LAPACKE.h
@@ -145,64 +140,16 @@ CMakeFiles/path_planning.dir/src/main.cpp.o
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Core/util/ReenableStupidWarnings.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Core/util/StaticAssert.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Core/util/XprHelper.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/./ComplexSchur.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/./RealQZ.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/./RealSchur.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/./Tridiagonalization.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/ComplexEigenSolver.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/ComplexSchur.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/EigenSolver.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/RealQZ.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/RealSchur.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Eigenvalues/Tridiagonalization.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/AlignedBox.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/AngleAxis.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/EulerAngles.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Homogeneous.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Hyperplane.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/OrthoMethods.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/ParametrizedLine.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Quaternion.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Rotation2D.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/RotationBase.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Scaling.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Transform.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Translation.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/Umeyama.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Geometry/arch/Geometry_SSE.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Householder/BlockHouseholder.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Householder/Householder.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Householder/HouseholderSequence.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/Jacobi/Jacobi.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/Determinant.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/FullPivLU.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/InverseImpl.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/PartialPivLU.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/PartialPivLU_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/LU/arch/Inverse_SSE.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/ColPivHouseholderQR.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/CompleteOrthogonalDecomposition.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/FullPivHouseholderQR.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/HouseholderQR.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/QR/HouseholderQR_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/SVD/BDCSVD.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/SVD/JacobiSVD.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/SVD/JacobiSVD_LAPACKE.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/SVD/SVDBase.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/SVD/UpperBidiagonalization.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/Image.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/Kernel.h
- /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/RealSvd2x2.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/blas.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/lapacke.h
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/misc/lapacke_mangling.h
@@ -215,14 +162,9 @@ CMakeFiles/path_planning.dir/src/main.cpp.o
  /Users/apple/Desktop/Path-Planning/src/Eigen-3.3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  /Users/apple/Desktop/Path-Planning/src/behavior.cpp
  /Users/apple/Desktop/Path-Planning/src/behavior.hpp
- /Users/apple/Desktop/Path-Planning/src/constants.cpp
- /Users/apple/Desktop/Path-Planning/src/costfunctions.cpp
- /Users/apple/Desktop/Path-Planning/src/costfunctions.hpp
  /Users/apple/Desktop/Path-Planning/src/json.hpp
  /Users/apple/Desktop/Path-Planning/src/main.cpp
  /Users/apple/Desktop/Path-Planning/src/spline.h
- /Users/apple/Desktop/Path-Planning/src/trajectory.cpp
- /Users/apple/Desktop/Path-Planning/src/trajectory.hpp
  /usr/local/include/pthread-barrier.h
  /usr/local/include/uWS/Extensions.h
  /usr/local/include/uWS/Group.h
