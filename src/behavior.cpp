@@ -83,6 +83,9 @@ vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector
   if (dist <= 0) { // Avoid dividing by zero in laneScore()
     dist = 1.0;
   }
+  if (lane == curr_lane and direction == true) {
+    curr_lead_vehicle_speed = velocity;
+  }
   return {dist, velocity};
 }
 

@@ -310,7 +310,7 @@ int main() {
             if (front_vehicle[0] < 10 or back_vehicle[0] < 10 or bp.avg_scores[check_lane] <= -5) {
               next_d = (lane * 4) + 2;
               if (check_lane != lane) {
-                bp.target_vehicle_speed = ref_vel;
+                bp.target_vehicle_speed = bp.curr_lead_vehicle_speed;
               }
             }
           
