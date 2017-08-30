@@ -307,9 +307,9 @@ int main() {
             vector<double> back_vehicle = bp.closestVehicle(frenet_vec[0], check_lane, sensor_fusion, false);
           
             // Reset to current lane and leading vehicle if not enough room
-            if (front_vehicle[0] < 10 or back_vehicle[0] < 10) {
+            if (front_vehicle[0] < 10 or back_vehicle[0] < 10 or bp.avg_scores[check_lane] <= -5) {
               next_d = (lane * 4) + 2;
-              if (bp.laneCalc(next_d) != lane) {
+              if (check_lane != lane) {
                 bp.target_vehicle_speed = ref_vel;
               }
             }

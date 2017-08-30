@@ -10,15 +10,16 @@
 
 int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sensor_fusion) {
   int lane = laneCalc(d);
-  curr_lane = lane;
   int new_lane;
-  bool blocked = false;
   double distance = closestVehicle(s, lane, sensor_fusion, true)[0];
-  // check if blocked, i.e. car is within 50 meters
-  if (distance > 20) {
+  
+  curr_lane = lane; // Keep the current lane to later calculate desired move
+  
+  // check if blocked, i.e. car is within 20 meters
+  if (distance > 20) { // if lots of space, stay in lane and go near the speed limit
     new_lane = lane;
     target_vehicle_speed = 22.352 - 0.5;
-    avg_scores = {0,0,0};
+    avg_scores = {0,0,0}; // Reset average scores for laneScore()
     return 0;
   } else {
     new_lane = laneScore(s, lane, sensor_fusion);
@@ -26,6 +27,7 @@ int BehaviorPlanner::lanePlanner(double s, double d, vector<vector<double>> sens
     target_vehicle_speed = vehicle[1];
   }
   
+  // Space between middle of each lane is four meters, so move accordingly
   if (new_lane == lane) {
     return 0;
   } else if (new_lane < lane) {
@@ -52,11 +54,12 @@ int BehaviorPlanner::laneCalc(double d) {
 vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector<double>> sensor_fusion, bool direction) {
   double dist = 10000;
   double velocity = 22.352 - 0.5; // Set in case of no cars
-  int vehicle_lane;
   double vehicle_s;
   double vehicle_d;
   double vehicle_v;
+  int vehicle_lane;
   
+  // Check each vehicle in sensor range
   for(int vehicle = 0; vehicle < sensor_fusion.size(); vehicle++) {
     vehicle_s = sensor_fusion[vehicle][5];
     vehicle_d = sensor_fusion[vehicle][6];
@@ -70,21 +73,20 @@ vector<double> BehaviorPlanner::closestVehicle(double s, int lane, vector<vector
           velocity = vehicle_v;
         }
       } else {
-        if (s >= vehicle_s and (s - vehicle_s) < dist) {
+        if (s >= vehicle_s and (s - vehicle_s) < dist) { // if behind my vehicle
           dist = s - vehicle_s;
           velocity = vehicle_v;
         }
       }
     }
   }
-  if (dist <= 0) {
-    dist = 0.1;
+  if (dist <= 0) { // Avoid dividing by zero in laneScore()
+    dist = 1.0;
   }
   return {dist, velocity};
 }
 
 int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor_fusion) {
-  // Calc each lane, only compare applicable lanes
   vector <double> scores = {0,0,0};
   vector <double> front_vehicle;
   vector <double> back_vehicle;
@@ -99,22 +101,23 @@ int BehaviorPlanner::laneScore(double s, int lane, vector<vector<double>> sensor
       scores[i] += 5; // if wide open lane, move into that lane
     } else {
       if (front_vehicle[0] < 10) {
-        scores[i] -= 5; // if car too close, negative score
+        scores[i] -= 5; // if car too close in front, negative score
       }
       if (back_vehicle[0] < 10) {
-        scores[i] -= 5; // if car too close, negative score
+        scores[i] -= 5; // if car too close in back, negative score
       }
       scores[i] += 1 - (10/(front_vehicle[0]/3)); // benefit for large open distance in lane in front
       scores[i] += 1 - (10/(back_vehicle[0]/3)); // benefit for large open distance in lane in back
       scores[i] += 1 - (10/(front_vehicle[1]/2)); // benefit for faster car speed in lane in front
       scores[i] += 1 / (back_vehicle[1]/2); // benefit for slower car speed in lane in back
     }
+    // Simple in-exact calculation for scores over the last ten iterations
     avg_scores[i] = (avg_scores[i] * 10) - avg_scores[i];
     avg_scores[i] += scores[i];
     avg_scores[i] /= 10;
-    cout<<"Lane: "<<i<<" Score: "<<scores[i]<<endl;
   }
   
+  // Only compare applicable lanes
   if (lane == 0) {
     return max_element(avg_scores.begin(), avg_scores.end() - 1) - avg_scores.begin();
   } else if (lane == 1) {
