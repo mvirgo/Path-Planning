@@ -78,7 +78,7 @@ int NextWaypoint(double x, double y, double theta, vector<double> maps_x, vector
 
 	double angle = abs(theta-heading);
 
-	if(angle > pi()/4)
+	if(angle > pi()/2)
 	{
 		closestWaypoint++;
 	}
